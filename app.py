@@ -1,9 +1,7 @@
 import streamlit as st
 import numpy as np
-import matplotlib.pyplot as plt
 import mpmath
 import plotly.graph_objs as go
-import time
 
 # Set up Streamlit app
 def main():
@@ -13,8 +11,8 @@ def main():
     # Sidebar configuration for user inputs
     st.sidebar.header("Parameters")
     st.sidebar.write("Adjust the parameters below to explore different parts of the zeta function's critical line.")
-    max_imaginary = st.sidebar.slider("Maximum Imaginary Part", 10, 500, 300, 10)  # Updated range to 500 with default of 300
-    precision = st.sidebar.slider("Precision (Decimal Places)", 5, 50, 30, 5)  # Updated default precision to 30
+    max_imaginary = st.sidebar.slider("Maximum Imaginary Part", 10, 500, 100, 10)  # Updated range to 500 with default of 100
+    precision = st.sidebar.slider("Precision (Decimal Places)", 5, 50, 15, 5)  # Updated default precision to 15
 
     # Set mpmath precision
     mpmath.mp.dps = precision
@@ -25,7 +23,7 @@ def main():
     # Visualization
     if zeros:
         st.write("## Non-Trivial Zeros of the Riemann Zeta Function")
-        plot_zeros_with_animation(zeros)
+        plot_zeros(zeros)
     else:
         st.write("No zeros found within the given range.")
 
@@ -41,7 +39,7 @@ def main():
 @st.cache_data
 def find_riemann_zeros(max_imaginary):
     zeros = []
-    for t in np.linspace(0, max_imaginary, 2000):  # Increased number of points for better detection
+    for t in np.linspace(0, max_imaginary, 1000):  # Reduced number of points to avoid long computation times
         s = 0.5 + t * 1j
         value = mpmath.zeta(s)
         if abs(value) < 1e-3:  # Relaxed threshold for zero detection
@@ -49,14 +47,14 @@ def find_riemann_zeros(max_imaginary):
     return zeros
 
 
-# Plot zeros with animation using Plotly for interactivity
-def plot_zeros_with_animation(zeros):
+# Plot zeros using Plotly for interactivity
+def plot_zeros(zeros):
     re_vals, im_vals = zip(*zeros) if zeros else ([], [])
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=[],
-        y=[],
+        x=re_vals,
+        y=im_vals,
         mode='markers',
         marker=dict(size=5, color='blue')
     ))
@@ -68,12 +66,7 @@ def plot_zeros_with_animation(zeros):
         showlegend=False
     )
 
-    # Animation loop
-    for i in range(1, len(re_vals) + 1):
-        fig.data[0].x = re_vals[:i]
-        fig.data[0].y = im_vals[:i]
-        st.plotly_chart(fig, use_container_width=True)
-        time.sleep(0.01)
+    st.plotly_chart(fig, use_container_width=True)
 
 
 if __name__ == "__main__":
