@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mpmath
 import plotly.graph_objs as go
-import plotly.animation as animation
 import time
 
 # Set up Streamlit app
@@ -51,14 +50,18 @@ def find_riemann_zeros(max_imaginary):
 def plot_zeros_with_animation(zeros):
     re_vals, im_vals = zip(*zeros)
 
+    # Create figure
     fig = go.Figure()
+
+    # Add trace with all data points for smoother animation
     fig.add_trace(go.Scatter(
-        x=[],
-        y=[],
+        x=re_vals,
+        y=im_vals,
         mode='markers',
         marker=dict(size=5, color='blue')
     ))
 
+    # Update layout for better visualization
     fig.update_layout(
         title='Non-Trivial Zeros of the Riemann Zeta Function',
         xaxis=dict(title='Real Part (Re(s))'),
@@ -66,12 +69,36 @@ def plot_zeros_with_animation(zeros):
         showlegend=False
     )
 
-    # Animation loop
-    for i in range(1, len(re_vals) + 1):
-        fig.data[0].x = re_vals[:i]
-        fig.data[0].y = im_vals[:i]
-        st.plotly_chart(fig, use_container_width=True)
-        time.sleep(0.01)
+    # Add frames for animation
+    frames = [
+        go.Frame(data=[go.Scatter(x=re_vals[:i], y=im_vals[:i])])
+        for i in range(1, len(re_vals) + 1, 10)
+    ]
+
+    fig.update(frames=frames)
+
+    # Add animation settings
+    fig.update_layout(updatemenus=[{
+        "buttons": [
+            {
+                "args": [None, {"frame": {"duration": 50, "redraw": True}, "fromcurrent": True}],
+                "label": "Play",
+                "method": "animate"
+            },
+            {
+                "args": [[None], {"frame": {"duration": 0, "redraw": False}, "mode": "immediate", "transition": {"duration": 0}}],
+                "label": "Pause",
+                "method": "animate"
+            }
+        ],
+        "direction": "left",
+        "pad": {"r": 10, "t": 87},
+        "showactive": False,
+        "type": "buttons"
+    }])
+
+    # Plot figure
+    st.plotly_chart(fig, use_container_width=True)
 
 
 if __name__ == "__main__":
