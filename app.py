@@ -38,12 +38,6 @@ def main():
     st.write("### References")
     st.markdown("- [Riemann Hypothesis - Wikipedia](https://en.wikipedia.org/wiki/Riemann_hypothesis)")
 
-# Sidebar configuration for user inputs
-st.sidebar.header("Parameters")
-st.sidebar.write("Adjust the parameters below to explore different parts of the zeta function's critical line.")
-max_imaginary = st.sidebar.slider("Maximum Imaginary Part", 10, 500, 300, 10)  # Updated range
-precision = st.sidebar.slider("Precision (Decimal Places)", 5, 50, 30, 5)  # Updated default precision
-
 # Function to find non-trivial zeros
 @st.cache_data
 def find_riemann_zeros(max_imaginary):
