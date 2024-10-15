@@ -5,6 +5,8 @@ import mpmath
 import plotly.graph_objs as go
 import time
 
+
+
 # Set up Streamlit app
 def main():
     st.title("Exploring the Riemann Hypothesis: Visualizing Non-Trivial Zeros")
@@ -36,18 +38,22 @@ def main():
     st.write("### References")
     st.markdown("- [Riemann Hypothesis - Wikipedia](https://en.wikipedia.org/wiki/Riemann_hypothesis)")
 
+# Sidebar configuration for user inputs
+st.sidebar.header("Parameters")
+st.sidebar.write("Adjust the parameters below to explore different parts of the zeta function's critical line.")
+max_imaginary = st.sidebar.slider("Maximum Imaginary Part", 10, 500, 300, 10)  # Updated range
+precision = st.sidebar.slider("Precision (Decimal Places)", 5, 50, 30, 5)  # Updated default precision
 
 # Function to find non-trivial zeros
 @st.cache_data
 def find_riemann_zeros(max_imaginary):
     zeros = []
-    for t in np.linspace(0, max_imaginary, 1000):
+    for t in np.linspace(0, max_imaginary, 2000):  # Increased points for better detection
         s = 0.5 + t * 1j
         value = mpmath.zeta(s)
-        if abs(value) < 1e-5:  # Approximate zero check
+        if abs(value) < 1e-3:  # Relaxed threshold
             zeros.append((mpmath.re(s), mpmath.im(s)))
     return zeros
-
 
 # Plot zeros with animation using Plotly for interactivity
 def plot_zeros_with_animation(zeros):
