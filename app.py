@@ -23,8 +23,11 @@ def main():
     zeros = find_riemann_zeros(max_imaginary)
 
     # Visualization
-    st.write("## Non-Trivial Zeros of the Riemann Zeta Function")
-    plot_zeros_with_animation(zeros)
+    if zeros:
+        st.write("## Non-Trivial Zeros of the Riemann Zeta Function")
+        plot_zeros_with_animation(zeros)
+    else:
+        st.write("No zeros found within the given range.")
 
     # Explanation and references
     st.write("### Explanation")
@@ -35,7 +38,7 @@ def main():
 
 
 # Function to find non-trivial zeros
-@st.cache
+@st.cache_data
 def find_riemann_zeros(max_imaginary):
     zeros = []
     for t in np.linspace(0, max_imaginary, 1000):
@@ -48,20 +51,16 @@ def find_riemann_zeros(max_imaginary):
 
 # Plot zeros with animation using Plotly for interactivity
 def plot_zeros_with_animation(zeros):
-    re_vals, im_vals = zip(*zeros)
+    re_vals, im_vals = zip(*zeros) if zeros else ([], [])
 
-    # Create figure
     fig = go.Figure()
-
-    # Add trace with all data points for smoother animation
     fig.add_trace(go.Scatter(
-        x=re_vals,
-        y=im_vals,
+        x=[],
+        y=[],
         mode='markers',
         marker=dict(size=5, color='blue')
     ))
 
-    # Update layout for better visualization
     fig.update_layout(
         title='Non-Trivial Zeros of the Riemann Zeta Function',
         xaxis=dict(title='Real Part (Re(s))'),
@@ -69,36 +68,12 @@ def plot_zeros_with_animation(zeros):
         showlegend=False
     )
 
-    # Add frames for animation
-    frames = [
-        go.Frame(data=[go.Scatter(x=re_vals[:i], y=im_vals[:i])])
-        for i in range(1, len(re_vals) + 1, 10)
-    ]
-
-    fig.update(frames=frames)
-
-    # Add animation settings
-    fig.update_layout(updatemenus=[{
-        "buttons": [
-            {
-                "args": [None, {"frame": {"duration": 50, "redraw": True}, "fromcurrent": True}],
-                "label": "Play",
-                "method": "animate"
-            },
-            {
-                "args": [[None], {"frame": {"duration": 0, "redraw": False}, "mode": "immediate", "transition": {"duration": 0}}],
-                "label": "Pause",
-                "method": "animate"
-            }
-        ],
-        "direction": "left",
-        "pad": {"r": 10, "t": 87},
-        "showactive": False,
-        "type": "buttons"
-    }])
-
-    # Plot figure
-    st.plotly_chart(fig, use_container_width=True)
+    # Animation loop
+    for i in range(1, len(re_vals) + 1):
+        fig.data[0].x = re_vals[:i]
+        fig.data[0].y = im_vals[:i]
+        st.plotly_chart(fig, use_container_width=True)
+        time.sleep(0.01)
 
 
 if __name__ == "__main__":
