@@ -15,12 +15,6 @@ def main():
     # Sidebar configuration for user inputs
     st.sidebar.header("Parameters")
     st.sidebar.write("Adjust the parameters below to explore different parts of the zeta function's critical line.")
-    max_imaginary = st.sidebar.slider("Maximum Imaginary Part", 10, 100, 40, 5)
-    precision = st.sidebar.slider("Precision (Decimal Places)", 5, 50, 15, 5)
-
-    # Sidebar configuration for user inputs
-    st.sidebar.header("Parameters")
-    st.sidebar.write("Adjust the parameters below to explore different parts of the zeta function's critical line.")
     max_imaginary = st.sidebar.slider("Maximum Imaginary Part", 10, 500, 300, 10)  # Updated range
     precision = st.sidebar.slider("Precision (Decimal Places)", 5, 50, 30, 5)  # Updated default precision    
 
